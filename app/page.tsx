@@ -1,4 +1,6 @@
 export const dynamic = 'force-static'
+// Trigger new deployment run on Cloudflare Pages
+
 
 import { Suspense } from 'react'
 import { HeroSection } from '@/components/hero-section'

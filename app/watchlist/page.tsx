@@ -4,7 +4,11 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getSessionUser } from '@/lib/auth-helper'
 import { getWatchlist } from '@/app/actions/watchlist'
-import { WatchlistView } from '@/components/watchlist-view'
+import dynamic from 'next/dynamic'
+
+const WatchlistView = dynamic(() => import('@/components/watchlist-view').then(mod => mod.WatchlistView), {
+  ssr: false,
+})
 
 export const metadata: Metadata = {
   title: 'My Watchlist — Otaku Insider',

@@ -7,9 +7,11 @@ import { db } from '@/lib/db'
 import { watchlist, review } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { Mail, Calendar, Shield, BookmarkCheck, Heart, MessageSquare, Award } from 'lucide-react'
-import { EditProfileForm } from '@/components/edit-profile-form'
-import { SignOutButton } from '@/components/sign-out-button'
+import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
+
+const EditProfileForm = dynamic(() => import('@/components/edit-profile-form').then(mod => mod.EditProfileForm), { ssr: false })
+const SignOutButton = dynamic(() => import('@/components/sign-out-button').then(mod => mod.SignOutButton), { ssr: false })
 
 export const metadata: Metadata = {
   title: 'My Profile — Otaku Insider',

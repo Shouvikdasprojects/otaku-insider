@@ -1,23 +1,17 @@
 'use server'
 
-import { auth } from '@/lib/auth'
+import { getSessionUser } from '@/lib/auth-helper'
 import { db } from '@/lib/db'
 import { watchlist } from '@/lib/db/schema'
 import { and, desc, eq } from 'drizzle-orm'
-import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 
 export type WatchStatus = 'WATCHING' | 'COMPLETED' | 'PLANNING' | 'PAUSED' | 'DROPPED'
 
 async function getUserId() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) throw new Error('Unauthorized')
-  return session.user.id
-}
-
-export async function getSessionUser() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  return session?.user ?? null
+  const user = await getSessionUser()
+  if (!user) throw new Error('Unauthorized')
+  return user.id
 }
 
 export async function getWatchlist() {
@@ -30,23 +24,23 @@ export async function getWatchlist() {
 }
 
 export async function getWatchingEntries() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) return []
+  const user = await getSessionUser()
+  if (!user) return []
   return db
     .select()
     .from(watchlist)
-    .where(and(eq(watchlist.userId, session.user.id), eq(watchlist.status, 'WATCHING')))
+    .where(and(eq(watchlist.userId, user.id), eq(watchlist.status, 'WATCHING')))
     .orderBy(desc(watchlist.updatedAt))
     .limit(20)
 }
 
 export async function getWatchlistEntry(animeId: number) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) return null
+  const user = await getSessionUser()
+  if (!user) return null
   const rows = await db
     .select()
     .from(watchlist)
-    .where(and(eq(watchlist.userId, session.user.id), eq(watchlist.animeId, animeId)))
+    .where(and(eq(watchlist.userId, user.id), eq(watchlist.animeId, animeId)))
     .limit(1)
   return rows[0] ?? null
 }

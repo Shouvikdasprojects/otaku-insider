@@ -1,9 +1,8 @@
 export const runtime = 'edge'
 
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
 import Link from 'next/link'
-import { auth } from '@/lib/auth'
+import { getSessionUser } from '@/lib/auth-helper'
 import { db } from '@/lib/db'
 import { watchlist, review } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -31,10 +30,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export default async function ProfilePage() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) redirect('/sign-in')
-
-  const { user } = session
+  const user = await getSessionUser()
+  if (!user) redirect('/sign-in')
   const initial = (user.name || user.email || '?').charAt(0).toUpperCase()
   const memberSince = new Date(user.createdAt).toLocaleDateString('en-IN', {
     year: 'numeric', month: 'long', day: 'numeric',

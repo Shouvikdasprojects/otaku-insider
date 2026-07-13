@@ -1,15 +1,14 @@
 'use server'
-import { auth } from '@/lib/auth'
+import { getSessionUser } from '@/lib/auth-helper'
 import { db } from '@/lib/db'
 import { review } from '@/lib/db/schema'
 import { and, desc, eq } from 'drizzle-orm'
-import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 
 async function getUser() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) throw new Error('Unauthorized')
-  return session.user
+  const user = await getSessionUser()
+  if (!user) throw new Error('Unauthorized')
+  return user
 }
 
 export async function getReviews(animeId: number) {
@@ -17,9 +16,9 @@ export async function getReviews(animeId: number) {
 }
 
 export async function getUserReview(animeId: number) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) return null
-  const rows = await db.select().from(review).where(and(eq(review.userId, session.user.id), eq(review.animeId, animeId))).limit(1)
+  const user = await getSessionUser()
+  if (!user) return null
+  const rows = await db.select().from(review).where(and(eq(review.userId, user.id), eq(review.animeId, animeId))).limit(1)
   return rows[0] ?? null
 }
 

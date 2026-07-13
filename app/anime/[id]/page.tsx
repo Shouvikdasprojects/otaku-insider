@@ -10,7 +10,8 @@ import { TrackVisit } from '@/components/track-visit'
 import { ShareButton } from '@/components/share-button'
 import { CharacterGrid } from '@/components/character-grid'
 import { ReviewsSection } from '@/components/reviews-section'
-import { getSessionUser, getWatchlistEntry, type WatchStatus } from '@/app/actions/watchlist'
+import { getSessionUser } from '@/lib/auth-helper'
+import { getWatchlistEntry, type WatchStatus } from '@/app/actions/watchlist'
 import { getReviews, getUserReview } from '@/app/actions/reviews'
 import {
   fetchAnimeDetail,

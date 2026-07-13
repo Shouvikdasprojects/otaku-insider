@@ -22,7 +22,7 @@ export function ReviewsSection({
 }) {
   const [isPending, startTransition] = useTransition()
   const [content, setContent] = useState(userReview?.content ?? '')
-  const [rating, setRating] = useState(userReview?.rating ?? 10)
+  const [rating, setRating] = useState(userReview?.rating ?? 0)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [isEditing, setIsEditing] = useState(!userReview)
@@ -31,6 +31,10 @@ export function ReviewsSection({
     e.preventDefault()
     setError(null)
     setSuccess(false)
+    if (rating < 1) {
+      setError('Please select a rating of at least 1 star.')
+      return
+    }
     if (content.trim().length < 20) {
       setError('Review must be at least 20 characters long.')
       return

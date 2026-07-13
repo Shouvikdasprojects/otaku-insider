@@ -1,3 +1,5 @@
+export const runtime = 'edge'
+
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { SearchX } from 'lucide-react'

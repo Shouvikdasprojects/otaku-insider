@@ -1,3 +1,5 @@
+export const runtime = 'edge'
+
 import { ImageResponse } from 'next/og'
 
 export const alt = 'Anime details on Otaku Insider'

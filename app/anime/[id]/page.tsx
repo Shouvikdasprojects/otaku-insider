@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+
+export const runtime = 'edge'
 import { Play, Star, Calendar, Clock, Film, ExternalLink } from 'lucide-react'
 import { MediaRow } from '@/components/media-row'
 import { WatchlistButton } from '@/components/watchlist-button'

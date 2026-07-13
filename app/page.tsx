@@ -17,6 +17,7 @@ import {
   getCurrentSeason,
 } from '@/lib/anilist'
 
+export const runtime = 'edge'
 export const revalidate = 1800
 
 function seasonLabel(season: string) {

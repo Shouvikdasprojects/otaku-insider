@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Play, Info, Star, Flame, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Play, Info, Star, Flame, ChevronLeft, ChevronRight } from '@/components/icons'
 import { cleanDescription, displayTitle, formatStatus, type AnimeMedia } from '@/lib/anilist'
 
 export function HeroSection({ items }: { items: AnimeMedia[] }) {

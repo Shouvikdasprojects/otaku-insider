@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
 export const runtime = 'edge'
-import { Play, Star, Calendar, Clock, Film, ExternalLink } from 'lucide-react'
+import { Play, Star, Calendar, Clock, Film, ExternalLink } from '@/components/icons'
 import { MediaRow } from '@/components/media-row'
 import dynamic from 'next/dynamic'
 import { TrackVisit } from '@/components/track-visit'

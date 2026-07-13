@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Star } from 'lucide-react'
+import { Star } from '@/components/icons'
 import { displayTitle, formatStatus, type AnimeMedia } from '@/lib/anilist'
 
 export function AnimeCard({

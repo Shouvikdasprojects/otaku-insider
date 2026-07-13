@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { LogOut } from 'lucide-react'
+import { LogOut } from '@/components/icons'
 import { authClient } from '@/lib/auth-client'
 
 export function SignOutButton() {

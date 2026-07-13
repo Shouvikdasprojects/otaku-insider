@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Minus, Plus, Star, Trash2, RefreshCw, StickyNote, ChevronDown, ChevronUp, BarChart3, Search, SortAsc } from 'lucide-react'
+import { Minus, Plus, Star, Trash2, RefreshCw, StickyNote, ChevronDown, ChevronUp, BarChart3, Search, SortAsc } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import {
   removeFromWatchlist,

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { BookmarkCheck, BarChart3, Download, LogOut, UserRound } from 'lucide-react'
+import { BookmarkCheck, BarChart3, Download, LogOut, UserRound } from '@/components/icons'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import {

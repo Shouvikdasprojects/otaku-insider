@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState, useTransition } from 'react'
-import { Save, Edit3 } from 'lucide-react'
+import { Save, Edit3 } from '@/components/icons'
 import { updateProfile } from '@/app/actions/profile'
 
 export function EditProfileForm({ initialName }: { initialName: string }) {

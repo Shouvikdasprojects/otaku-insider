@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Play, ExternalLink, MonitorPlay } from 'lucide-react'
+import { Play, ExternalLink, MonitorPlay } from '@/components/icons'
 
 interface Episode {
   title: string | null

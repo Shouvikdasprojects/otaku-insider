@@ -6,7 +6,7 @@ import { getSessionUser } from '@/lib/auth-helper'
 import { db } from '@/lib/db'
 import { watchlist, review } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { Mail, Calendar, Shield, BookmarkCheck, Heart, MessageSquare, Award } from 'lucide-react'
+import { Mail, Calendar, Shield, BookmarkCheck, Heart, MessageSquare, Award } from '@/components/icons'
 import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
 

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Bookmark, BookmarkCheck, ChevronDown, Trash2 } from 'lucide-react'
+import { Bookmark, BookmarkCheck, ChevronDown, Trash2 } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Star, Trash2, Edit3, Send } from 'lucide-react'
+import { Star, Trash2, Edit3, Send } from '@/components/icons'
 import { upsertReview, deleteReview } from '@/app/actions/reviews'
 import type { Review } from '@/lib/db/schema'
 

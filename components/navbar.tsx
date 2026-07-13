@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import {
   Search, X, Loader2, Clock, TrendingUp,
   CornerDownLeft, Star, ArrowUpRight, Menu as MenuIcon,
-} from 'lucide-react'
+} from '@/components/icons'
 import { UserMenu } from '@/components/user-menu'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { searchAnime, getTrending, type SearchSuggestion } from '@/lib/anilist-search'

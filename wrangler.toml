@@ -3,11 +3,6 @@
 minify = true
 compatibility_date = "2024-09-23"
 compatibility_flags = [ "nodejs_compat" ]
+pages_build_output_dir = ".vercel/output"
 
-[site]
-bucket = ".vercel/output/static"
-
-[build]
-command = "npx --legacy-peer-deps @cloudflare/next-on-pages@1"
-path = ".vercel/output"
 

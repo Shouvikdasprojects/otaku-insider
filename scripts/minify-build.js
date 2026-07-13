@@ -1,7 +1,5 @@
 const fs = require('fs')
 const path = require('path')
-const esbuild = require('esbuild')
-
 const targetDir = path.join(__dirname, '../.vercel/output')
 
 function getFiles(dir, files = []) {
@@ -19,6 +17,8 @@ function getFiles(dir, files = []) {
   return files
 }
 
+const { execSync } = require('child_process')
+
 async function main() {
   console.log('⚡️ Starting build assets minification...')
   try {
@@ -32,13 +32,11 @@ async function main() {
 
     for (const file of files) {
       console.log(`📦 Minifying: ${path.relative(targetDir, file)}`)
-      const content = fs.readFileSync(file, 'utf8')
-      const result = await esbuild.transform(content, {
-        minify: true,
-        treeShaking: true,
-        legalComments: 'none',
-      })
-      fs.writeFileSync(file, result.code, 'utf8')
+      try {
+        execSync(`npx esbuild "${file}" --minify --allow-overwrite --outfile="${file}"`, { stdio: 'ignore' })
+      } catch (err) {
+        console.warn(`⚠️ Failed to minify ${file}:`, err.message)
+      }
     }
     console.log('✅ Minification complete!')
   } catch (error) {

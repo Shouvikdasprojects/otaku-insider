@@ -10,8 +10,8 @@ import { Mail, Calendar, Shield, BookmarkCheck, Heart, MessageSquare, Award } fr
 import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
 
-const EditProfileForm = dynamic(() => import('@/components/edit-profile-form').then(mod => mod.EditProfileForm), { ssr: false })
-const SignOutButton = dynamic(() => import('@/components/sign-out-button').then(mod => mod.SignOutButton), { ssr: false })
+const EditProfileForm = dynamic(() => import('@/components/edit-profile-form').then(mod => mod.EditProfileForm))
+const SignOutButton = dynamic(() => import('@/components/sign-out-button').then(mod => mod.SignOutButton))
 
 export const metadata: Metadata = {
   title: 'My Profile — Otaku Insider',

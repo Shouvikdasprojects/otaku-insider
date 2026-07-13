@@ -9,8 +9,8 @@ import dynamic from 'next/dynamic'
 import { TrackVisit } from '@/components/track-visit'
 import { ShareButton } from '@/components/share-button'
 import { CharacterGrid } from '@/components/character-grid'
-const WatchlistButton = dynamic(() => import('@/components/watchlist-button').then(mod => mod.WatchlistButton), { ssr: false })
-const ReviewsSection = dynamic(() => import('@/components/reviews-section').then(mod => mod.ReviewsSection), { ssr: false })
+const WatchlistButton = dynamic(() => import('@/components/watchlist-button').then(mod => mod.WatchlistButton))
+const ReviewsSection = dynamic(() => import('@/components/reviews-section').then(mod => mod.ReviewsSection))
 import { getSessionUser } from '@/lib/auth-helper'
 import { getWatchlistEntry, type WatchStatus } from '@/app/actions/watchlist'
 import { getReviews, getUserReview } from '@/app/actions/reviews'

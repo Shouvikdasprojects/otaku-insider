@@ -6,9 +6,7 @@ import { getSessionUser } from '@/lib/auth-helper'
 import { getWatchlist } from '@/app/actions/watchlist'
 import dynamic from 'next/dynamic'
 
-const WatchlistView = dynamic(() => import('@/components/watchlist-view').then(mod => mod.WatchlistView), {
-  ssr: false,
-})
+const WatchlistView = dynamic(() => import('@/components/watchlist-view').then(mod => mod.WatchlistView))
 
 export const metadata: Metadata = {
   title: 'My Watchlist — Otaku Insider',

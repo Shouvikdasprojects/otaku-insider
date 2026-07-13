@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'

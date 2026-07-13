@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import { Suspense } from 'react'
 import { HeroSection } from '@/components/hero-section'
 import { MediaRow } from '@/components/media-row'

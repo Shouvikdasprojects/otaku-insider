@@ -1,3 +1,6 @@
+export const runtime = 'edge'
+export const dynamic = 'force-static'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'

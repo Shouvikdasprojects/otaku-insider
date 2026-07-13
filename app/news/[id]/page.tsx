@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import { getNewsArticleById } from '@/app/actions/news'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'

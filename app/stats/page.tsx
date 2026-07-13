@@ -1,5 +1,3 @@
-export const runtime = 'edge'
-
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'

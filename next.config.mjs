@@ -6,7 +6,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  serverExternalPackages: ['three', '@react-three/fiber', '@react-three/drei'],
 }
 
 export default nextConfig

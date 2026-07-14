@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Clock, Timer } from 'lucide-react'
-import { displayTitle, formatStatus, type AiringScheduleItem } from '@/lib/anilist'
+import { displayTitle, formatStatus, fetchAiringSchedule, type AiringScheduleItem } from '@/lib/anilist'
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
@@ -58,9 +58,30 @@ function Countdown({ airingAt }: { airingAt: number }) {
 
 // ── Schedule view ──────────────────────────────────────────────────────────
 
-export function ScheduleView({ schedules }: { schedules: AiringScheduleItem[] }) {
+export function ScheduleView() {
   const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  const [schedules, setSchedules] = useState<AiringScheduleItem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    setMounted(true)
+    
+    const now = Math.floor(Date.now() / 1000)
+    const startOfToday = now - (now % 86400)
+    
+    fetchAiringSchedule(startOfToday, startOfToday + 7 * 86400).then((data) => {
+      if (active) {
+        setSchedules(data)
+        setLoading(false)
+      }
+    }).catch((err) => {
+      console.error(err)
+      if (active) setLoading(false)
+    })
+    
+    return () => { active = false }
+  }, [])
 
   const days = useMemo<DayGroup[]>(() => {
     // If not mounted, just return a dummy set of days based on a fixed offset to avoid hydration mismatch
@@ -95,8 +116,8 @@ export function ScheduleView({ schedules }: { schedules: AiringScheduleItem[] })
   const [activeKey, setActiveKey] = useState(() => days[0]?.key ?? '')
   const active = days.find((d) => d.key === activeKey) ?? days[0]
 
-  // If not mounted, render a skeleton to avoid ANY chance of structural hydration crash
-  if (!mounted) {
+  // If not mounted or loading, render a skeleton
+  if (!mounted || loading) {
     return (
       <div className="flex flex-col gap-6 animate-pulse">
         <div className="flex gap-2 overflow-x-auto pb-1">

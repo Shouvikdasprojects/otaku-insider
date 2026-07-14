@@ -9,11 +9,7 @@ export const metadata: Metadata = {
   description: 'Weekly anime airing schedule. See exactly when new episodes drop, in your local time.',
 }
 
-export default async function SchedulePage() {
-  const now = Math.floor(Date.now() / 1000)
-  const startOfToday = now - (now % 86400)
-  const schedules = await fetchAiringSchedule(startOfToday, startOfToday + 7 * 86400)
-
+export default function SchedulePage() {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6">
       <div className="mb-8 flex flex-col gap-2">
@@ -22,7 +18,7 @@ export default async function SchedulePage() {
           New episodes airing over the next 7 days, shown in your local time.
         </p>
       </div>
-      <ScheduleView schedules={schedules} />
+      <ScheduleView />
     </div>
   )
 }

@@ -41,6 +41,7 @@ import Send from 'lucide-react/dist/esm/icons/send'
 import Bookmark from 'lucide-react/dist/esm/icons/bookmark'
 import Info from 'lucide-react/dist/esm/icons/info'
 import Flame from 'lucide-react/dist/esm/icons/flame'
+import Github from 'lucide-react/dist/esm/icons/github'
 
 export {
   Mail,
@@ -85,5 +86,6 @@ export {
   Send,
   Bookmark,
   Info,
-  Flame
+  Flame,
+  Github
 }

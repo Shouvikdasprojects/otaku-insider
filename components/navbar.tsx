@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
   Search, X, Loader2, Clock, TrendingUp,
-  CornerDownLeft, Star, ArrowUpRight, Menu as MenuIcon,
+  CornerDownLeft, Star, ArrowUpRight, Menu as MenuIcon, Github
 } from '@/components/icons'
 import { UserMenu } from '@/components/user-menu'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -582,9 +582,18 @@ export function Navbar() {
         {/* Desktop search */}
         <div className="ml-auto hidden sm:block">{SearchWidget}</div>
 
-        {/* Theme toggle + User menu */}
+        {/* Theme toggle + GitHub + User menu */}
         <div className="hidden sm:flex items-center gap-2">
           <ThemeToggle />
+          <a
+            href="https://github.com/Shouvikdasprojects/otaku-insider"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            aria-label="GitHub Repository"
+          >
+            <Github className="h-4 w-4" />
+          </a>
           <UserMenu />
         </div>
 
@@ -617,6 +626,18 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
+
+          <div className="flex items-center gap-4 px-3 pt-2">
+            <a
+              href="https://github.com/Shouvikdasprojects/otaku-insider"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <Github className="h-5 w-5" />
+              <span>GitHub</span>
+            </a>
+          </div>
 
           <div className="px-3 pt-2">
             <UserMenu />

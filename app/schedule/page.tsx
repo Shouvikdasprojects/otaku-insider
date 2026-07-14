@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { ScheduleView } from '@/components/schedule-view'
 import { fetchAiringSchedule } from '@/lib/anilist'
 
-export const revalidate = 3600 // revalidate every hour
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Airing Schedule | Otaku Insider',

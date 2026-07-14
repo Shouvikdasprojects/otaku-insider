@@ -62,12 +62,24 @@ const MEDIA_FIELDS = `
 `
 
 async function gql<T>(query: string, variables: Record<string, unknown> = {}, revalidate = 3600): Promise<T> {
-  const res = await fetch(ANILIST_API, {
+  const isServer = typeof window === 'undefined'
+  
+  const options: RequestInit = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...(isServer && { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' }),
+    },
     body: JSON.stringify({ query, variables }),
-    next: { revalidate },
-  })
+  }
+  
+  if (isServer) {
+    // @ts-ignore
+    options.next = { revalidate }
+  }
+
+  const res = await fetch(ANILIST_API, options)
   if (!res.ok) {
     throw new Error(`AniList API error: ${res.status} ${res.statusText}`)
   }

@@ -1,10 +1,29 @@
+<div align="center">
+  
 # 🌸 Otaku Insider
 
-![Otaku Insider Banner](public/logo.jpg)
+**Your Next-Generation Anime Tracking & Discovery Platform**
 
-**Otaku Insider** is a next-generation, high-performance anime tracking and discovery platform. Built for anime enthusiasts, it offers a seamless, blazingly fast experience for discovering new anime, tracking your watch progress, viewing airing schedules, and staying up-to-date with anime news.
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-5A67D8?style=for-the-badge&logo=cloudflare&logoColor=white)](https://otaku-insider.shouvikdaswork.workers.dev)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare_Workers-Deployed-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://workers.cloudflare.com/)
+[![Neon Database](https://img.shields.io/badge/Neon_Postgres-Serverless-00E599?style=for-the-badge&logo=postgresql&logoColor=black)](https://neon.tech/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
-Built with cutting-edge web technologies, it leverages edge computing and serverless databases to deliver a premium, responsive experience anywhere in the world.
+*Otaku Insider offers a seamless, blazingly fast experience for discovering new anime, tracking your watch progress, viewing airing schedules, and staying up-to-date with anime news.*
+
+</div>
+
+---
+
+## 📌 Table of Contents
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Deployment](#-deployment)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
@@ -20,13 +39,21 @@ Built with cutting-edge web technologies, it leverages edge computing and server
 
 ## 🛠️ Tech Stack
 
+### Frontend
 - **Framework:** [Next.js](https://nextjs.org/) (App Router, React 19)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/) & [Shadcn UI](https://ui.shadcn.com/)
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) & [Shadcn UI](https://ui.shadcn.com/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+
+### Backend & Data
 - **Authentication:** [Better-Auth](https://better-auth.com/)
 - **Database:** [Neon PostgreSQL](https://neon.tech/) (Serverless)
 - **ORM:** [Drizzle ORM](https://orm.drizzle.team/)
-- **Deployment:** [Cloudflare Workers](https://workers.cloudflare.com/) (via [OpenNext](https://opennext.js.org/))
-- **Data Source:** [AniList GraphQL API](https://anilist.gitbook.io/anilist-apiv2-docs)
+- **External API:** [AniList GraphQL API](https://anilist.gitbook.io/anilist-apiv2-docs)
+
+### Deployment & Infrastructure
+- **Hosting:** [Cloudflare Workers](https://workers.cloudflare.com/)
+- **Adapter:** [OpenNext](https://opennext.js.org/)
+- **CI/CD:** GitHub Actions
 
 ---
 
@@ -51,8 +78,6 @@ Follow these instructions to set up the project locally for development.
 2. **Install dependencies:**
    ```bash
    npm install
-   # or
-   pnpm install
    ```
 
 3. **Set up Environment Variables:**
@@ -60,9 +85,7 @@ Follow these instructions to set up the project locally for development.
    ```bash
    cp .env.example .env.local
    ```
-   Open `.env.local` and fill in the required variables:
-   - `DATABASE_URL`: Your Neon PostgreSQL connection string.
-   - `BETTER_AUTH_SECRET`: Generate a random base64 secret (e.g., using `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`).
+   Open `.env.local` and fill in the required variables (see below).
 
 4. **Initialize the Database:**
    Push the Drizzle schema to your Neon database:
@@ -75,6 +98,23 @@ Follow these instructions to set up the project locally for development.
    npm run dev
    ```
    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+---
+
+## 🔐 Environment Variables
+
+To run this project, you will need to add the following environment variables to your `.env.local` file:
+
+```env
+# Neon PostgreSQL connection string (with ?sslmode=require)
+DATABASE_URL=postgres://user:password@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require
+
+# Generate with: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+BETTER_AUTH_SECRET=your_random_base64_secret
+
+# The canonical URL of your app
+BETTER_AUTH_URL=http://localhost:3000
+```
 
 ---
 
@@ -101,9 +141,13 @@ Feel free to check out the [issues page](https://github.com/Shouvikdasprojects/o
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+---
+
 ## 📝 License
 
 This project is open-source and available under the [MIT License](LICENSE).
 
 ---
-*Built with ❤️ for Anime fans around the world.*
+<div align="center">
+  <i>Built with ❤️ for Anime fans around the world.</i>
+</div>

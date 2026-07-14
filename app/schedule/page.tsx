@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { ScheduleView } from '@/components/schedule-view'
 import { fetchAiringSchedule } from '@/lib/anilist'
 
+export const revalidate = 3600 // revalidate every hour
+
 export const metadata: Metadata = {
   title: 'Airing Schedule | Otaku Insider',
   description: 'Weekly anime airing schedule. See exactly when new episodes drop, in your local time.',

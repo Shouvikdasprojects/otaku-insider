@@ -1,8 +1,5 @@
-export const dynamic = 'force-static'
-
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
+import { getSessionUser } from '@/lib/auth-helper'
 import { db } from '@/lib/db'
 import { watchlist } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -15,13 +12,13 @@ export const metadata: Metadata = {
 }
 
 export default async function StatsPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) redirect('/sign-in')
+  const user = await getSessionUser()
+  if (!user) redirect('/sign-in')
 
   const entries = await db
     .select()
     .from(watchlist)
-    .where(eq(watchlist.userId, session.user.id))
+    .where(eq(watchlist.userId, user.id))
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6">

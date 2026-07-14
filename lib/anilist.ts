@@ -250,7 +250,7 @@ export async function fetchAiringSchedule(startSec: number, endSec: number): Pro
         pageInfo: PageInfo
         airingSchedules: (AiringScheduleItem & { media: AnimeMedia & { isAdult?: boolean } })[]
       }
-    }>(SCHEDULE_QUERY, { start: startSec, end: endSec, page }, 1800)
+    }>(SCHEDULE_QUERY, { start: startSec, end: endSec, page }, 0)
     items.push(...data.Page.airingSchedules.filter((s) => s.media && !s.media.isAdult))
     hasNext = data.Page.pageInfo.hasNextPage
     page++

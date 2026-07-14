@@ -17,12 +17,24 @@ interface DayGroup {
 // ── Live countdown ─────────────────────────────────────────────────────────
 
 function Countdown({ airingAt }: { airingAt: number }) {
-  const [remaining, setRemaining] = useState(() => airingAt * 1000 - Date.now())
+  const [mounted, setMounted] = useState(false)
+  const [remaining, setRemaining] = useState(0)
 
   useEffect(() => {
+    setMounted(true)
+    setRemaining(airingAt * 1000 - Date.now())
     const id = setInterval(() => setRemaining(airingAt * 1000 - Date.now()), 1000)
     return () => clearInterval(id)
   }, [airingAt])
+
+  if (!mounted) {
+    return (
+      <span className="flex items-center gap-1 rounded-md bg-primary/5 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-transparent">
+        <Timer className="h-2.5 w-2.5 text-primary/30" />
+        00h 00m 00s
+      </span>
+    )
+  }
 
   if (remaining <= 0) {
     return (
@@ -39,7 +51,7 @@ function Countdown({ airingAt }: { airingAt: number }) {
   return (
     <span className="flex items-center gap-1 rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-primary">
       <Timer className="h-2.5 w-2.5" />
-      {h > 0 && `${h}h `}{m}m {String(s).padStart(2, '0')}s
+      {h > 0 ? `${h}h ` : ''}{m}m {String(s).padStart(2, '0')}s
     </span>
   )
 }
@@ -47,8 +59,16 @@ function Countdown({ airingAt }: { airingAt: number }) {
 // ── Schedule view ──────────────────────────────────────────────────────────
 
 export function ScheduleView({ schedules }: { schedules: AiringScheduleItem[] }) {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
   const days = useMemo<DayGroup[]>(() => {
-    const now = new Date()
+    // If not mounted, just return a dummy set of days based on a fixed offset to avoid hydration mismatch
+    // Actually, on the server, we can just use the current UTC date, and client uses local. 
+    // To strictly avoid hydration mismatch, we delay the `new Date()` evaluation until mounted,
+    // or just render the server's version and suppress warning.
+    // The safest is to use the server's date until mounted!
+    const now = new Date() // During SSR this is server time. Client hydration uses client time.
     const todayKey = now.toDateString()
     const groups: DayGroup[] = []
 
@@ -74,6 +94,24 @@ export function ScheduleView({ schedules }: { schedules: AiringScheduleItem[] })
 
   const [activeKey, setActiveKey] = useState(() => days[0]?.key ?? '')
   const active = days.find((d) => d.key === activeKey) ?? days[0]
+
+  // If not mounted, render a skeleton to avoid ANY chance of structural hydration crash
+  if (!mounted) {
+    return (
+      <div className="flex flex-col gap-6 animate-pulse">
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+            <div key={i} className="h-9 w-24 shrink-0 rounded-full bg-secondary/50" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="h-32 rounded-xl bg-secondary/30" />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6">

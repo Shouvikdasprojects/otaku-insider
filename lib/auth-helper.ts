@@ -36,7 +36,10 @@ export async function getSessionUser() {
       .limit(1)
 
     return userRows[0] ?? null
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === 'DYNAMIC_SERVER_USAGE') {
+      throw error
+    }
     console.error('Error in getSessionUser helper:', error)
     return null
   }

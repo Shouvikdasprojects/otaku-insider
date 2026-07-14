@@ -177,7 +177,7 @@ function first(arr: RawMedia[]): AwardAnime | null {
 export async function fetchYearAwards(year: number): Promise<YearAwards> {
   const res = await fetch(ANILIST_API, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'User-Agent': 'OtakuInsider/1.0 (https://github.com/Shouvikdasprojects)' },
     body: JSON.stringify({ query: AWARDS_QUERY, variables: { year } }),
     next: { revalidate: 60 * 60 * 6 }, // revalidate every 6h
   })

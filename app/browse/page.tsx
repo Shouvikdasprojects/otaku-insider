@@ -1,17 +1,12 @@
-export const dynamic = 'force-static'
+'use client'
 
-import { Suspense } from 'react'
-import type { Metadata } from 'next'
+import { useState, useEffect, Suspense, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { SearchX } from 'lucide-react'
 import { AnimeCard } from '@/components/anime-card'
 import { PaginationNav } from '@/components/pagination-nav'
 import { BrowseFilterBar } from '@/components/browse-filter-bar'
-import { fetchAnimePage, fetchGenres } from '@/lib/anilist'
-
-export const metadata: Metadata = {
-  title: 'Browse Anime — Otaku Insider',
-  description: 'Search and filter thousands of anime by genre, year, season, format, and status.',
-}
+import { fetchAnimePage, fetchGenres, type AnimeMedia, type PageInfo } from '@/lib/anilist'
 
 interface BrowseParams {
   search?: string
@@ -23,31 +18,64 @@ interface BrowseParams {
   sort?: string
   page?: string
   minScore?: string
-  episodeRange?: string // 'short'|'medium'|'long'
+  episodeRange?: string
 }
 
-async function BrowseResults({ params }: { params: BrowseParams }) {
-  const page = Math.max(1, Number.parseInt(params.page || '1', 10) || 1)
-  const minScore = params.minScore ? Number.parseInt(params.minScore, 10) : undefined
-  const epRange = params.episodeRange
-  const episodesGreater = epRange === 'medium' ? 12 : epRange === 'long' ? 26 : undefined
-  const episodesLesser  = epRange === 'short'  ? 13 : epRange === 'medium' ? 27 : undefined
-  const { pageInfo, media } = await fetchAnimePage({
-    page,
-    perPage: 24,
-    search: params.search,
-    genre: params.genre,
-    seasonYear: params.year ? Number.parseInt(params.year, 10) : undefined,
-    season: params.season,
-    format: params.format,
-    status: params.status,
-    sort: params.sort ? [params.sort] : params.search ? ['SEARCH_MATCH'] : ['POPULARITY_DESC'],
-    minScore,
-    episodesGreater,
-    episodesLesser,
-  })
+function GridSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      {Array.from({ length: 18 }).map((_, i) => (
+        <div key={i} className="aspect-[2/3] w-full animate-pulse rounded-xl bg-card" />
+      ))}
+    </div>
+  )
+}
 
-  if (media.length === 0) {
+function BrowseResults({ params }: { params: BrowseParams }) {
+  const [data, setData] = useState<{ media: AnimeMedia[], pageInfo: PageInfo } | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let mounted = true
+    setLoading(true)
+
+    const page = Math.max(1, Number.parseInt(params.page || '1', 10) || 1)
+    const minScore = params.minScore ? Number.parseInt(params.minScore, 10) : undefined
+    const epRange = params.episodeRange
+    const episodesGreater = epRange === 'medium' ? 12 : epRange === 'long' ? 26 : undefined
+    const episodesLesser  = epRange === 'short'  ? 13 : epRange === 'medium' ? 27 : undefined
+
+    fetchAnimePage({
+      page,
+      perPage: 24,
+      search: params.search,
+      genre: params.genre,
+      seasonYear: params.year ? Number.parseInt(params.year, 10) : undefined,
+      season: params.season,
+      format: params.format,
+      status: params.status,
+      sort: params.sort ? [params.sort] : params.search ? ['SEARCH_MATCH'] : ['POPULARITY_DESC'],
+      minScore,
+      episodesGreater,
+      episodesLesser,
+    }).then((res) => {
+      if (mounted) {
+        setData(res)
+        setLoading(false)
+      }
+    }).catch((err) => {
+      console.error(err)
+      if (mounted) setLoading(false)
+    })
+
+    return () => { mounted = false }
+  }, [params])
+
+  if (loading) {
+    return <GridSkeleton />
+  }
+
+  if (!data || data.media.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 py-24 text-center">
         <SearchX className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
@@ -65,32 +93,37 @@ async function BrowseResults({ params }: { params: BrowseParams }) {
   return (
     <div className="flex flex-col gap-10">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-        {media.map((anime) => (
+        {data.media.map((anime) => (
           <AnimeCard key={anime.id} anime={anime} className="w-full" />
         ))}
       </div>
-      <PaginationNav basePath="/browse" params={cleanParams} currentPage={pageInfo.currentPage} lastPage={pageInfo.lastPage} />
+      <PaginationNav basePath="/browse" params={cleanParams} currentPage={data.pageInfo.currentPage} lastPage={data.pageInfo.lastPage} />
     </div>
   )
 }
 
-function GridSkeleton() {
-  return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-      {Array.from({ length: 18 }).map((_, i) => (
-        <div key={i} className="aspect-[2/3] w-full animate-pulse rounded-xl bg-card" />
-      ))}
-    </div>
-  )
-}
+function BrowseContent() {
+  const searchParams = useSearchParams()
+  const [genres, setGenres] = useState<string[]>([])
+  
+  const params: BrowseParams = useMemo(() => {
+    return {
+      search: searchParams.get('search') || undefined,
+      genre: searchParams.get('genre') || undefined,
+      year: searchParams.get('year') || undefined,
+      season: searchParams.get('season') || undefined,
+      format: searchParams.get('format') || undefined,
+      status: searchParams.get('status') || undefined,
+      sort: searchParams.get('sort') || undefined,
+      page: searchParams.get('page') || undefined,
+      minScore: searchParams.get('minScore') || undefined,
+      episodeRange: searchParams.get('episodeRange') || undefined,
+    }
+  }, [searchParams])
 
-export default async function BrowsePage({
-  searchParams,
-}: {
-  searchParams: Promise<BrowseParams>
-}) {
-  const params = await searchParams
-  const genres = await fetchGenres()
+  useEffect(() => {
+    fetchGenres().then(setGenres).catch(console.error)
+  }, [])
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6">
@@ -104,10 +137,15 @@ export default async function BrowsePage({
       </div>
 
       <BrowseFilterBar genres={genres} current={params} />
-
-      <Suspense key={JSON.stringify(params)} fallback={<GridSkeleton />}>
-        <BrowseResults params={params} />
-      </Suspense>
+      <BrowseResults params={params} />
     </div>
+  )
+}
+
+export default function BrowsePage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-muted-foreground">Loading browse tools...</div>}>
+      <BrowseContent />
+    </Suspense>
   )
 }

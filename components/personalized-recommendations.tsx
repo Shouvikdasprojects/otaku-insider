@@ -1,53 +1,67 @@
-import { db } from '@/lib/db'
-import { watchlist } from '@/lib/db/schema'
-import { eq, and, gte, or } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+'use client'
+
+import { useState, useEffect } from 'react'
 import { MediaRow } from '@/components/media-row'
-import { fetchPopular, fetchAnimeDetail, type AnimeMedia } from '@/lib/anilist'
+import { fetchAnimeDetail, type AnimeMedia } from '@/lib/anilist'
+import { getUserFavorites } from '@/app/actions/watchlist'
 
-async function getRecommendedMedia(): Promise<AnimeMedia[]> {
-  try {
-    const session = await auth.api.getSession({ headers: await headers() })
-    if (!session?.user) return []
+export function PersonalizedRecommendations() {
+  const [items, setItems] = useState<AnimeMedia[]>([])
+  const [loading, setLoading] = useState(true)
 
-    // Fetch user's favorite/highly rated completed or watching shows
-    const favorites = await db
-      .select()
-      .from(watchlist)
-      .where(
-        and(
-          eq(watchlist.userId, session.user.id),
-          or(
-            gte(watchlist.userRating, 7),
-            eq(watchlist.status, 'COMPLETED'),
-            eq(watchlist.status, 'WATCHING')
-          )
-        )
-      )
-      .limit(5)
+  useEffect(() => {
+    let mounted = true
+    setLoading(true)
+    
+    async function loadRecommendations() {
+      try {
+        const favorites = await getUserFavorites()
+        if (favorites.length === 0) {
+          if (mounted) {
+            setItems([])
+            setLoading(false)
+          }
+          return
+        }
 
-    if (favorites.length === 0) return []
+        const sorted = [...favorites].sort((a, b) => (b.userRating ?? 0) - (a.userRating ?? 0))
+        const target = sorted[0]
 
-    // Fetch recommendations for the highest rated one
-    // Sort by rating or updatedAt desc
-    const sorted = [...favorites].sort((a, b) => (b.userRating ?? 0) - (a.userRating ?? 0))
-    const target = sorted[0]
+        const details = await fetchAnimeDetail(target.animeId)
+        const recs = details.recommendations?.nodes
+          ?.map((n) => n.mediaRecommendation)
+          .filter((m): m is AnimeMedia => m !== null) ?? []
 
-    // Fetch recommendations from AniList detail query
-    const details = await fetchAnimeDetail(target.animeId)
-    const recs = details.recommendations?.nodes
-      ?.map((n) => n.mediaRecommendation)
-      .filter((m): m is AnimeMedia => m !== null) ?? []
+        if (mounted) {
+          setItems(recs.slice(0, 15))
+          setLoading(false)
+        }
+      } catch (err) {
+        console.error(err)
+        if (mounted) {
+          setItems([])
+          setLoading(false)
+        }
+      }
+    }
 
-    return recs.slice(0, 15)
-  } catch {
-    return []
+    loadRecommendations()
+    return () => { mounted = false }
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="mx-auto w-full max-w-7xl animate-pulse">
+        <div className="mb-4 h-8 w-48 rounded-md bg-secondary" />
+        <div className="flex gap-4 overflow-hidden">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="aspect-[2/3] w-[160px] shrink-0 rounded-xl bg-card" />
+          ))}
+        </div>
+      </div>
+    )
   }
-}
 
-export async function PersonalizedRecommendations() {
-  const items = await getRecommendedMedia()
   if (items.length === 0) return null
 
   return (

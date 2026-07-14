@@ -1,4 +1,4 @@
-export const runtime = 'edge'
+
 
 import { getNewsArticleById } from '@/app/actions/news'
 import { notFound } from 'next/navigation'

@@ -1,45 +1,16 @@
-export const dynamic = 'force-static'
+'use client'
 
-import { Suspense } from 'react'
+import { useState, useEffect, Suspense, useMemo } from 'react'
 import Link from 'next/link'
-import type { Metadata } from 'next'
+import { useSearchParams } from 'next/navigation'
 import { AnimeCard } from '@/components/anime-card'
 import { PaginationNav } from '@/components/pagination-nav'
-import { fetchSeasonal, getCurrentSeason } from '@/lib/anilist'
-
-export const metadata: Metadata = {
-  title: 'Seasonal Anime — Otaku Insider',
-  description: 'Explore anime lineups by season and year, from the latest simulcasts to past classics.',
-}
+import { fetchSeasonal, getCurrentSeason, type AnimeMedia, type PageInfo } from '@/lib/anilist'
 
 const SEASONS = ['WINTER', 'SPRING', 'SUMMER', 'FALL'] as const
 
 function seasonLabel(s: string) {
   return s.charAt(0) + s.slice(1).toLowerCase()
-}
-
-async function SeasonalGrid({ season, year, page }: { season: string; year: number; page: number }) {
-  const { pageInfo, media } = await fetchSeasonal(season, year, page, 24)
-
-  if (media.length === 0) {
-    return <p className="py-16 text-center text-muted-foreground">No anime found for this season yet.</p>
-  }
-
-  return (
-    <div className="flex flex-col gap-10">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-        {media.map((anime) => (
-          <AnimeCard key={anime.id} anime={anime} className="w-full" />
-        ))}
-      </div>
-      <PaginationNav
-        basePath="/seasonal"
-        params={{ season, year: String(year) }}
-        currentPage={pageInfo.currentPage}
-        lastPage={pageInfo.lastPage}
-      />
-    </div>
-  )
 }
 
 function GridSkeleton() {
@@ -52,18 +23,61 @@ function GridSkeleton() {
   )
 }
 
-export default async function SeasonalPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ season?: string; year?: string; page?: string }>
-}) {
-  const params = await searchParams
-  const current = getCurrentSeason()
-  const season = SEASONS.includes((params.season ?? '') as (typeof SEASONS)[number])
-    ? (params.season as string)
+function SeasonalGrid({ season, year, page }: { season: string; year: number; page: number }) {
+  const [data, setData] = useState<{ media: AnimeMedia[], pageInfo: PageInfo } | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let mounted = true
+    setLoading(true)
+    fetchSeasonal(season, year, page, 24).then(res => {
+      if (mounted) {
+        setData(res)
+        setLoading(false)
+      }
+    }).catch(err => {
+      console.error(err)
+      if (mounted) setLoading(false)
+    })
+    return () => { mounted = false }
+  }, [season, year, page])
+
+  if (loading) return <GridSkeleton />
+
+  if (!data || data.media.length === 0) {
+    return <p className="py-16 text-center text-muted-foreground">No anime found for this season yet.</p>
+  }
+
+  return (
+    <div className="flex flex-col gap-10">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        {data.media.map((anime) => (
+          <AnimeCard key={anime.id} anime={anime} className="w-full" />
+        ))}
+      </div>
+      <PaginationNav
+        basePath="/seasonal"
+        params={{ season, year: String(year) }}
+        currentPage={data.pageInfo.currentPage}
+        lastPage={data.pageInfo.lastPage}
+      />
+    </div>
+  )
+}
+
+function SeasonalContent() {
+  const searchParams = useSearchParams()
+  
+  const current = useMemo(() => getCurrentSeason(), [])
+  const paramsSeason = searchParams.get('season')
+  const paramsYear = searchParams.get('year')
+  const paramsPage = searchParams.get('page')
+  
+  const season = SEASONS.includes((paramsSeason ?? '') as (typeof SEASONS)[number])
+    ? (paramsSeason as string)
     : current.season
-  const year = Number.parseInt(params.year ?? '', 10) || current.year
-  const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1)
+  const year = Number.parseInt(paramsYear ?? '', 10) || current.year
+  const page = Math.max(1, Number.parseInt(paramsPage ?? '1', 10) || 1)
 
   const years = Array.from({ length: 8 }, (_, i) => current.year + 1 - i)
 
@@ -111,9 +125,15 @@ export default async function SeasonalPage({
         </div>
       </div>
 
-      <Suspense key={`${season}-${year}-${page}`} fallback={<GridSkeleton />}>
-        <SeasonalGrid season={season} year={year} page={page} />
-      </Suspense>
+      <SeasonalGrid season={season} year={year} page={page} />
     </div>
+  )
+}
+
+export default function SeasonalPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-muted-foreground">Loading seasonal catalog...</div>}>
+      <SeasonalContent />
+    </Suspense>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Download, CheckCircle2, AlertCircle, Loader2, ArrowRight } from 'lucide-react'
-import { importFromAniList, importFromMAL } from '@/app/actions/import'
+import { importFromAniListClient, importFromMALClient } from '@/app/import/import-logic'
 
 type Platform = 'anilist' | 'mal'
 type Step = 'input' | 'importing' | 'done' | 'error'
@@ -23,8 +23,8 @@ export default function ImportClient() {
     setError(null)
     try {
       const res = platform === 'anilist'
-        ? await importFromAniList(username)
-        : await importFromMAL(username)
+        ? await importFromAniListClient(username)
+        : await importFromMALClient(username)
       setResult(res)
       setStep('done')
     } catch (err) {

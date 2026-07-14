@@ -1,8 +1,6 @@
-export const dynamic = 'force-static'
-// Trigger new deployment run on Cloudflare Pages
+'use client'
 
-
-import { Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { HeroSection } from '@/components/hero-section'
 import { MediaRow } from '@/components/media-row'
 import { AwardsSpotlight } from '@/components/awards-spotlight'
@@ -19,23 +17,49 @@ import {
   fetchTopRated,
   fetchSeasonal,
   getCurrentSeason,
+  type AnimeMedia,
 } from '@/lib/anilist'
-
-export const revalidate = 1800
 
 function seasonLabel(season: string) {
   return season.charAt(0) + season.slice(1).toLowerCase()
 }
 
-async function HomeContent() {
-  const { season, year } = getCurrentSeason()
-  const [trending, popular, topRated, seasonal] = await Promise.all([
-    fetchTrending(20),
-    fetchPopular(20),
-    fetchTopRated(20),
-    fetchSeasonal(season, year, 1, 20),
-  ])
+function HomeContent() {
+  const [data, setData] = useState<{
+    trending: AnimeMedia[];
+    popular: AnimeMedia[];
+    topRated: AnimeMedia[];
+    seasonal: AnimeMedia[];
+    season: string;
+    year: number;
+  } | null>(null)
 
+  useEffect(() => {
+    let mounted = true
+    const { season, year } = getCurrentSeason()
+    Promise.all([
+      fetchTrending(20),
+      fetchPopular(20),
+      fetchTopRated(20),
+      fetchSeasonal(season, year, 1, 20),
+    ]).then(([trending, popular, topRated, seasonalResp]) => {
+      if (mounted) {
+        setData({ 
+          trending, 
+          popular, 
+          topRated, 
+          seasonal: seasonalResp.media, 
+          season, 
+          year 
+        })
+      }
+    }).catch(console.error)
+    return () => { mounted = false }
+  }, [])
+
+  if (!data) return <HomeSkeleton />
+
+  const { trending, popular, topRated, seasonal, season, year } = data
   const featuredSlides = trending.slice(0, 10)
 
   return (
@@ -67,7 +91,7 @@ async function HomeContent() {
         <MediaRow
           title={`${seasonLabel(season)} ${year} Season`}
           href="/seasonal"
-          items={seasonal.media}
+          items={seasonal}
         />
         <MediaRow title="All-Time Popular" href="/browse?sort=POPULARITY_DESC" items={popular} />
         <MediaRow title="Top Rated" href="/browse?sort=SCORE_DESC" items={topRated} ranked />

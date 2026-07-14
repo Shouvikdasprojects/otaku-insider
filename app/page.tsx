@@ -34,6 +34,8 @@ function HomeContent() {
     year: number;
   } | null>(null)
 
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
     let mounted = true
     const { season, year } = getCurrentSeason()
@@ -53,9 +55,22 @@ function HomeContent() {
           year 
         })
       }
-    }).catch(console.error)
+    }).catch(err => {
+      console.error(err)
+      if (mounted) setError(err.message || 'Unknown error occurred')
+    })
     return () => { mounted = false }
   }, [])
+
+  if (error) {
+    return (
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-center py-32 text-center">
+        <h2 className="text-2xl font-bold text-red-500 mb-4">Error Loading Data</h2>
+        <p className="text-foreground/70">{error}</p>
+        <p className="mt-4 text-sm text-foreground/50">Please open the browser console for more details.</p>
+      </div>
+    )
+  }
 
   if (!data) return <HomeSkeleton />
 

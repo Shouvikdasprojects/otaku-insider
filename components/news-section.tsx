@@ -1,9 +1,23 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { fetchLatestNews } from '@/app/actions/news'
 import Link from 'next/link'
 import { Rss, Calendar, ArrowRight } from 'lucide-react'
 
-export async function NewsSection() {
-  const articles = await fetchLatestNews()
+export function NewsSection() {
+  const [articles, setArticles] = useState<any[]>([])
+  
+  useEffect(() => {
+    let mounted = true
+    fetchLatestNews().then(news => {
+      if (mounted) setArticles(news)
+    }).catch(console.error)
+    return () => { mounted = false }
+  }, [])
+
+  if (articles.length === 0) return null
+
   const displayArticles = articles.slice(0, 4) // Show top 4 on homepage
 
   return (
